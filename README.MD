@@ -1,29 +1,32 @@
-##自动采集妹子图
+## 自动采集妹子图
+
 > 作者：Ivey
-##演示
+
+## 演示
+
 ![](https://pic.abcyun.co/image/5e1099ecf14c4)
 ![](https://pic.abcyun.co/image/5e109a06c6db7)
 ![](https://pic.abcyun.co/image/5e109a10880b1)
 ![](https://pic.abcyun.co/image/5e1099f5ced24)
 ![](https://pic.abcyun.co/image/5e1099fe4b262)
 ![](https://pic.abcyun.co/image/5e1099e3c5ee7)
-###快速运行
+### 快速运行
 * 安装必备工具
 * JDK 1.8
 * MySql 5.6+
-###创建目录
+### 创建目录
 ```
 mkdir /javaweb/meimei/
 cd  /javaweb/meimei/
 wget https://github.com/Hidove/MeiMei/archive/master.zip
 unzip master.zip
 ```
-###导入数据库
+### 导入数据库
 `create database meimei;`
 `use meimei;`
 `source meimei.sql;`
 
-###运行项目
+### 运行项目
 `java -jar meimei.jar`
 * 后台运行
 `nohup java -jar meimei.jar &` 
