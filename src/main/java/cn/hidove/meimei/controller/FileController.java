@@ -27,7 +27,7 @@ public class FileController {
     public String index(HttpServletRequest request, Model model) {
 
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        path = path.replace("/file","");
+        path = path.replace("/file", "");
         String basePath = System.getProperty("user.dir") + "/" + filePath;
         String tmpPath = basePath.replace("\\", "/");
         if (path.length() != 0) {
@@ -64,10 +64,10 @@ public class FileController {
     public String image(HttpServletRequest request, Model model) {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String url = request.getScheme() + "://" + request.getServerName();
-        if (request.getServerPort() != 80 || request.getServerPort() != 443) {
+        if (request.getServerPort() != 80 && request.getServerPort() != 443) {
             url += ":" + request.getServerPort();
         }
-        path = path.replace("/file","");
+        path = path.replace("/file", "");
         url += "/images" + path;
         String[] split = url.split("/");
         model.addAttribute("path", path);
