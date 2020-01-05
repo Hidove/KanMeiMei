@@ -1,7 +1,7 @@
 package cn.hidove.meimei.service.impl;
 
 import cn.hidove.meimei.mapper.ImageListMapper;
-import cn.hidove.meimei.provider.HttpProvieder;
+import cn.hidove.meimei.provider.HttpProvider;
 import cn.hidove.meimei.provider.Mm131Provider;
 import cn.hidove.meimei.service.MMService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ public class MM131ServiceImpl implements MMService {
     private ImageListMapper imageListMapper;
 
     @Autowired
-    private HttpProvieder httpProvieder;
+    private HttpProvider httpProvider;
 
     @Value("${mm131.startPage}")
     private Integer startPage;
@@ -48,7 +47,7 @@ public class MM131ServiceImpl implements MMService {
     }
 
     private String action(String category) {
-        String html = httpProvieder.get("https://www.mm131.net/" + category, "https://www.mm131.net/", "gbk");
+        String html = httpProvider.get("https://www.mm131.net/" + category, "https://www.mm131.net/", "gbk");
         Element last = Jsoup.parse(html).select("body > div.main > dl > dd.page > a").last();
         String href = last.attr("href");
         String[] split = href.split("[._]");
@@ -100,14 +99,16 @@ public class MM131ServiceImpl implements MMService {
             for (int index = i; index < i + threadNum; index++) {
                 int finalIndex = index;
                 new Thread(() -> {
-                    String res = httpProvieder.get(list.get(finalIndex), "https://www.mm131.net/", "gbk");
+                    String res = httpProvider.get(list.get(finalIndex), "https://www.mm131.net/", "gbk");
                     if (res == null) {
                         log.error("URL=[" + list.get(finalIndex) + "]" + " faild");
                         return;
                     } else {
                         log.info("URL=[" + list.get(finalIndex) + "]" + " success");
                     }
-                    getListAndSave(res);
+                    String[] split = list.get(finalIndex).split("/");
+                    String category = split[split.length - 2];
+                    getListAndSave(res,category);
                 }).start();
             }
         }
@@ -116,16 +117,16 @@ public class MM131ServiceImpl implements MMService {
     /**
      * 获取列表
      */
-    private void getListAndSave(String html) {
+    private void getListAndSave(String html,String category) {
         Map<String, String> map = mm1313Provider.getList(html);
         if (map.size() == 0) {
             log.error("getListAndSave执行失败");
             return;
         }
-        String sql = "INSERT ignore INTO meimei_list(`title`,`url`,`key`,`createtime`,`updatetime`) VALUES";
+        String sql = "INSERT ignore INTO meimei_list(`title`,`category`,`url`,`key`,`createtime`,`updatetime`) VALUES";
         int index = 0;
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            sql += "('" + entry.getKey() + "','" + entry.getValue() + "','mm131','" + System.currentTimeMillis() + "','0')";
+            sql += "('" + entry.getKey() + "','"+ category + "','" + entry.getValue() + "','mm131','" + System.currentTimeMillis() + "','0')";
             index++;
             if (index < map.size()) {
                 sql += ",";

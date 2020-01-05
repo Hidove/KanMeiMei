@@ -5,10 +5,19 @@ public class ImageUrlModel {
     private Integer id;
     private Integer parent_id;
     private String  title;
+    private String  category;
     private String  url;
     private String key;
     private Long createtime;
+    private Long updatetime;
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
     public Integer getId() {
         return id;
     }
@@ -64,7 +73,5 @@ public class ImageUrlModel {
     public void setUpdatetime(Long updatetime) {
         this.updatetime = updatetime;
     }
-
-    private Long updatetime;
 
 }

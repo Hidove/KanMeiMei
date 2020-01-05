@@ -4,12 +4,19 @@ public class ImageListModel {
 
     private Integer id;
     private String title;
+    private String category;
     private String url;
     private String key;
     private Long createtime;
     private Long updatetime;
 
+    public String getCategory() {
+        return category;
+    }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
     public Integer getId() {
         return id;
     }

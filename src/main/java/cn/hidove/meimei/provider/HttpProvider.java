@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 @Component
-public class HttpProvieder {
+public class HttpProvider {
 
     public String get(@RequestParam("url") String url,
                       @RequestParam(value = "referer", defaultValue = "https://www.baidu.com", required = false) String referer,

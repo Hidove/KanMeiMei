@@ -12,18 +12,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.util.ResourceUtils;
 
-import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 
 @Configuration
 @Slf4j
-@EnableScheduling
+//@EnableScheduling
 public class Mm131TaskImpl implements MMTask {
 
     @Autowired
@@ -53,9 +50,9 @@ public class Mm131TaskImpl implements MMTask {
             return;
         }
         List<String> list = mm131Provider.getImageUrl(imageUrl.getUrl(), 1);
-        String sql = "INSERT ignore INTO meimei_image(`parent_id`,`title`,`url`,`key`,`createtime`,`updatetime`) VALUES";
+        String sql = "INSERT ignore INTO meimei_image(`parent_id`,`title`,`category`,`url`,`key`,`createtime`,`updatetime`) VALUES";
         for (int i = 0; i < list.size(); i++) {
-            sql += "('" + imageUrl.getId() + "','" + imageUrl.getTitle() + "','" + list.get(i) + "','mm131'," + System.currentTimeMillis() + ",0)";
+            sql += "('" + imageUrl.getId() + "','" + imageUrl.getTitle() + "','" + imageUrl.getCategory() + "','" + list.get(i) + "','mm131'," + System.currentTimeMillis() + ",0)";
             if (i < list.size() - 1) {
                 sql += ",";
             }
@@ -65,6 +62,9 @@ public class Mm131TaskImpl implements MMTask {
         log.info("获取主题地址 URL=[" + imageUrl.getUrl() + "] success");
     }
 
+    /**
+     * 定时获取数据库链接并下载
+     */
     @Scheduled(cron = "${cron.download}")
     public void download(
     ) {
@@ -80,12 +80,11 @@ public class Mm131TaskImpl implements MMTask {
             return;
         }
         if (!imageSavePath.endsWith("/")) imageSavePath += "/";
-        String path = System.getProperty("user.dir") + "/" + imageSavePath;
+        String path = System.getProperty("user.dir") + "/" + imageSavePath + "/" + imageUrl.getCategory() + "/";
         mm131Provider.download(imageUrl.getUrl(), path, imageUrl.getTitle());
         imageUrlMapper.updateUpdatetimeById(imageUrl.getId(), System.currentTimeMillis());
         log.info("Download URL=[" + imageUrl.getUrl() + "]" + " success");
     }
-
 
     /**
      * 爬取首页更新的内容
@@ -93,11 +92,12 @@ public class Mm131TaskImpl implements MMTask {
     @Scheduled(cron = "${cron.getHomePageList}")
     public void getHomePageList() {
         Map<String, String> map = mm131Provider.getHomePageList();
-        String sql = "INSERT ignore INTO meimei_list(`title`,`url`,`key`,`createtime`,`updatetime`) VALUES";
-        Iterator<Map.Entry<String, String>> entries = map.entrySet().iterator();
+        String sql = "INSERT ignore INTO meimei_list(`title`,`category`,`url`,`key`,`createtime`,`updatetime`) VALUES";
         Integer index = 0;
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            sql += "('" + entry.getKey() + "','" + entry.getValue() + "','mm131','" + System.currentTimeMillis() + "','0')";
+            String[] split = entry.getValue().split("/");
+            String category = split[split.length - 2];
+            sql += "('" + entry.getKey() + "','" + category + "','" + entry.getValue() + "','mm131','" + System.currentTimeMillis() + "','0')";
             index++;
             if (index < map.size()) {
                 sql += ",";

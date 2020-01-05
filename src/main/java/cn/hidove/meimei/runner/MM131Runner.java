@@ -21,7 +21,7 @@ public class MM131Runner implements ApplicationRunner {
     @Autowired
     private MM131ServiceImpl mm131ServiceImpl;
 
-    @Value("${meimei.isStart.getHomePageList}")
+    @Value("${meimei.getHomePageList.start}")
     private boolean getHomePageListIsStart;
     @Override
     public void run(ApplicationArguments args) throws Exception {

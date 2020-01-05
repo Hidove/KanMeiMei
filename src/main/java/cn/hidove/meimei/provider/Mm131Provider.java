@@ -1,7 +1,6 @@
 package cn.hidove.meimei.provider;
 
 
-import cn.hidove.meimei.model.ImageListModel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,7 +18,7 @@ public class Mm131Provider {
 
 
     @Autowired
-    private HttpProvieder httpProvieder;
+    private HttpProvider httpProvider;
 
     @Value("${mm131.namedWithId}")
     private boolean namingRules;
@@ -27,7 +26,6 @@ public class Mm131Provider {
     public Map<String, String> getList(
             @RequestParam(value = "html") String html
     ) {
-//        String html = httpProvieder.get(url, "https://www.mm131.net", "gbk");
         Document doc = Jsoup.parse(html);
         Elements elements = doc.select(".main > .public-box > dd");
         Map MMMap = new HashMap();
@@ -49,7 +47,7 @@ public class Mm131Provider {
         //https://www.mm131.net/xinggan/5297.html
         String id = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".html"));
         //https://img1.mmmw.net/pic/5297/2.jpg
-        String response = httpProvieder.get(url, "https://www.mm131.net", "gbk");
+        String response = httpProvider.get(url, "https://www.mm131.net", "gbk");
         Document doc = Jsoup.parse(response);
         Elements select = doc.select("body > div.content > div.content-page > span.page-ch");
         String maxPageSize = select.first().text();
@@ -68,7 +66,7 @@ public class Mm131Provider {
             @RequestParam(value = "path", defaultValue = "/meimei") String path,
             @RequestParam(value = "title", defaultValue = "meimei.md") String title
     ) {
-        byte[] response = httpProvieder.download(url, "https://www.mm131.net");
+        byte[] response = httpProvider.download(url, "https://www.mm131.net");
         if (response == null) {
             return null;
         }
@@ -79,13 +77,13 @@ public class Mm131Provider {
         } else {
             path = path + title;
         }
-        httpProvieder.write((LocalDateTime.now().toString() + "  BY  Hidove Ivey").getBytes(), path, title + ".md");
-        return httpProvieder.write(response, path, fileName);
+        httpProvider.write((LocalDateTime.now().toString() + "  BY  Hidove Ivey").getBytes(), path, title + ".md");
+        return httpProvider.write(response, path, fileName);
     }
 
     public Map<String, String> getHomePageList() {
         String url = "https://www.mm131.net/";
-        String response = httpProvieder.get(url, "https://www.mm131.net", "gbk");
+        String response = httpProvider.get(url, "https://www.mm131.net", "gbk");
         Document doc = Jsoup.parse(response);
         Elements elements = doc.select(".main_top > ul > li.left-list_li");
         Map MMMap = new HashMap();

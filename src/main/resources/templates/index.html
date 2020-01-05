@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Hellow</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Kan MM</title>
 </head>
 <body>
-
+<h1 th:text="${'Index of '+ path}"></h1>
+<hr>
+<!--<pre>-->
+<a href="../">../</a>
+<div th:each="value:${folderList}">
+    <a th:href="${'/main/'+ value.getPath()}+'/'" th:text="${value.getName()}"></a>
+    <span th:text="${'Size：' + value.getSize()}"></span>
+    <span th:text="${'ModifyTime：' + value.getUpdateTime()}"></span>
+</div>
+<div th:each="value:${fileList}">
+    <a th:href="${'/images/'+ value.getPath()}+'/'" th:text="${value.getName()}"></a>
+    <span th:text="${'Size：' + value.getSize()}"></span>
+    <span th:text="${'ModifyTime：' + value.getUpdateTime()}"></span>
+</div>
+<!--</pre>-->
+<hr>
 </body>
 </html>
