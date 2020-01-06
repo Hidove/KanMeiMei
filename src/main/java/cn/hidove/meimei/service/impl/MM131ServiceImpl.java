@@ -43,12 +43,13 @@ public class MM131ServiceImpl implements MMService {
     private Integer maxPage;
 
     private ThreadPoolExecutor poolExecutor;
+
     //获取整个网站的
     public String startThread(List<String> list) {
         poolExecutor = new ThreadPoolExecutor(2, MaximumThreads, 3, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
         String status = "";
         for (String category : list) {
-            poolExecutor.execute(()->{
+            poolExecutor.execute(() -> {
                 action(category);
             });
         }
@@ -77,7 +78,7 @@ public class MM131ServiceImpl implements MMService {
         }
         if (tStartPage > tMaxPage) {
             while (true) {
-                new Thread(()->{
+                new Thread(() -> {
                     System.out.println(LocalDateTime.now() + "startPage比maxPage还要大是什么意思？直接崩溃吧~~~~");
                 }).start();
             }
@@ -92,14 +93,14 @@ public class MM131ServiceImpl implements MMService {
             }
             list.add(url);
         }
-        log.info("启动" +category+ "线程处理中");
+        log.info("启动" + category + "线程处理中");
         Threading(list);
-        log.info("启动" +category+ "线程处理成功");
+        log.info("启动" + category + "线程处理成功");
         return "success";
     }
 
     private void Threading(List<String> list) {
-        for (int i = 0; i < list.size(); i ++) {
+        for (int i = 0; i < list.size(); i++) {
             int finalI = i;
             poolExecutor.execute(() -> {
                 String res = httpProvider.get(list.get(finalI), "https://www.mm131.net/", "gbk");
@@ -111,7 +112,10 @@ public class MM131ServiceImpl implements MMService {
                 }
                 String[] split = list.get(finalI).split("/");
                 String category = split[split.length - 2];
-                getListAndSave(res,category);
+                if (category.contains("mm131.net")) {
+                    category = split[split.length - 1];
+                }
+                getListAndSave(res, category);
             });
         }
     }
@@ -119,7 +123,7 @@ public class MM131ServiceImpl implements MMService {
     /**
      * 获取列表
      */
-    private void getListAndSave(String html,String category) {
+    private void getListAndSave(String html, String category) {
         Map<String, String> map = mm1313Provider.getList(html);
         if (map.size() == 0) {
             log.error("getListAndSave执行失败");
@@ -128,7 +132,7 @@ public class MM131ServiceImpl implements MMService {
         String sql = "INSERT ignore INTO meimei_list(`title`,`category`,`url`,`key`,`createtime`,`updatetime`) VALUES";
         int index = 0;
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            sql += "('" + entry.getKey() + "','"+ category + "','" + entry.getValue() + "','mm131','" + System.currentTimeMillis() + "','0')";
+            sql += "('" + entry.getKey() + "','" + category + "','" + entry.getValue() + "','mm131','" + System.currentTimeMillis() + "','0')";
             index++;
             if (index < map.size()) {
                 sql += ",";
