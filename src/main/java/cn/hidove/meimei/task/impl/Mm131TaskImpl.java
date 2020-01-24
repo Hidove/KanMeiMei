@@ -65,7 +65,9 @@ public class Mm131TaskImpl implements MMTask {
     /**
      * 定时获取数据库链接并下载
      */
-    @Scheduled(cron = "${cron.download}")
+
+    @Scheduled(fixedRateString = "${fixedRate.download}")
+//    @Scheduled(cron = "${cron.download}")
     public void download(
     ) {
         List<ImageUrlModel> imageUrlModels = imageUrlMapper.imageUrl();
@@ -81,9 +83,13 @@ public class Mm131TaskImpl implements MMTask {
         }
         if (!imageSavePath.endsWith("/")) imageSavePath += "/";
         String path = System.getProperty("user.dir") + "/" + imageSavePath + "/" + imageUrl.getCategory() + "/";
-        mm131Provider.download(imageUrl.getUrl(), path, imageUrl.getTitle());
-        imageUrlMapper.updateUpdatetimeById(imageUrl.getId(), System.currentTimeMillis());
-        log.info("Download URL=[" + imageUrl.getUrl() + "]" + " success");
+        try {
+            mm131Provider.download(imageUrl.getUrl(), path, imageUrl.getTitle());
+            imageUrlMapper.updateUpdatetimeById(imageUrl.getId(), System.currentTimeMillis());
+            log.info("Download URL=[" + imageUrl.getUrl() + "]" + " success");
+        }catch (Exception e){
+            log.warn("Download URL=[" + imageUrl.getUrl() + "]" + " faild " + e.getMessage());
+        }
     }
 
     /**

@@ -69,36 +69,29 @@ mvn package
 * application.properties
 ```
 server.port=8080
-
 #启动时是否获取整站的主题URL，推荐第一次使用运行一下
 meimei.getHomePageList.start=false
-
 #meimei.image.savePath=相对路径
 meimei.image.savePath=images/
-
 #爬取最大线程数
-meimei.MaximumThreads=5
-
+meimei.MaximumThreads=10
 ##startPage和maxPage为0时不限制
 #采集列表开始页
 mm131.startPage=0
 #采集列表最大页
 mm131.maxPage=0
-
 #是否以id命名文件夹 true以id命名，false以主题名命名
 mm131.namedWithId=false
 ##定时任务
-#定时下载
-cron.download=* * * * * ?
+#定时下载 毫秒
+fixedRate.download=500
 #定时获取imageUrl
-cron.getImageUrl=* * * * * ?
+cron.getImageUrl=0 0 0/2 * * ?
 #定时获取首页更新数据
-cron.getHomePageList=* * * * * ?
-
+cron.getHomePageList=0 0 0/3 * * ?
 spring.datasource.url=jdbc:mysql://127.0.0.1:3306/meimei?serverTimezone=Asia/Shanghai
 spring.datasource.username=root
 spring.datasource.password=root
-
 logging.file.max-size=2MB
 logging.file.name=logs/meimei.log
 logging.level.root=info

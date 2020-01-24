@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -65,7 +66,7 @@ public class Mm131Provider {
             @RequestParam(value = "url", defaultValue = "1") String url,
             @RequestParam(value = "path", defaultValue = "/meimei") String path,
             @RequestParam(value = "title", defaultValue = "meimei.md") String title
-    ) {
+    ) throws IOException {
         byte[] response = httpProvider.download(url, "https://www.mm131.net");
         if (response == null) {
             return null;

@@ -43,7 +43,7 @@ public class HttpProvider {
 
     public byte[] download(@RequestParam("url") String url,
                     @RequestParam(value = "referer", defaultValue = "https://www.baidu.com", required = false) String referer
-    ) {
+    ) throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         RequestConfig requestConfig = RequestConfig.custom()
@@ -52,14 +52,10 @@ public class HttpProvider {
         httpGet.setConfig(requestConfig);
         httpGet.setHeader("referer", referer);
         httpGet.setHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36");
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpGet);
-            byte[] bytes = EntityUtils.toByteArray(response.getEntity());
-            if (bytes != null && bytes.length != 0) {
-                return bytes;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        CloseableHttpResponse response = httpClient.execute(httpGet);
+        byte[] bytes = EntityUtils.toByteArray(response.getEntity());
+        if (bytes != null && bytes.length != 0) {
+            return bytes;
         }
         return null;
     }
